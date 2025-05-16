@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>BMT11 卡序查詢工具</title>
+</head>
+<body>
+  <h2>BMT11 卡序查詢結果</h2>
+  <pre id="output">查詢中...</pre>
+
+  <script>
+    async function fetchCard(i) {
+      const res = await fetch("https://rentme.com.tw/api/shdb/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          group: "BMT11",
+          nums: [String(i)]
+        })
+      });
+      return await res.json();
+    }
+
+    async function run() {
+      const output = document.getElementById("output");
+      let results = "";
+
+      for (let i = 1; i <= 80; i++) {
+        try {
+          const data = await fetchCard(i);
+          results += `卡 ${i}: ${data.message || "沒有結果"}\n`;
+          output.textContent = results;
+        } catch (err) {
+          results += `卡 ${i}: 錯誤 ${err}\n`;
+          output.textContent = results;
+        }
+      }
+    }
+
+    run();
+  </script>
+</body>
+</html>
